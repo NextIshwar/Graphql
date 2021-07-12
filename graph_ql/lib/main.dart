@@ -52,14 +52,15 @@ class _HomePageState extends State<HomePage> {
             children: [
               Query(
                 builder: (result, {fetchMore, refetch}) {
-                  if (result.data == null) {
-                    return Text("No data found");
-                  }
+                  
                   if (result.isLoading) {
                     return SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator());
+                  }
+                  else if (result.data == null) {
+                    return Text("No data found");
                   }
                   return SizedBox(
                     height: 200,
