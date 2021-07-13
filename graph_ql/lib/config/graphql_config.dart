@@ -24,24 +24,7 @@ class Config {
     ),
     
   );
-  // static String _token =
-  //     "U8bcmJUM441Zh0n8OaqQrTa3fEktZa4rVM33gdA9A4sSdIQdKDx0eBaUsQf7AjW1";
-  //static final AuthLink authLink = AuthLink(getToken: () => _token);
-  // static final WebSocketLink websocketLink = WebSocketLink(
-  //   'wss://hasura.io/learn/graphql',
-  //   config: SocketClientConfig(
-  //     autoReconnect: true,
-  //     inactivityTimeout: Duration(seconds: 30),
-  //     initialPayload: () async {
-  //       return {
-  //         'headers': {'x-hasura-admin-secret': _token},
-  //       };
-  //     },
-  //   ),
-  // );
-  // static final Link link = authLink.concat(httpLink).concat(websocketLink);
-  static ValueNotifier<GraphQLClient> initailizeClient(String token) {
-    //  _token = token;
+  static ValueNotifier<GraphQLClient> initailizeClient() {
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
         cache: GraphQLCache(),
