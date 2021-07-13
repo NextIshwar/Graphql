@@ -25,6 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController c1 = TextEditingController();
   TextEditingController c2 = TextEditingController();
+  var _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -84,85 +85,105 @@ class _HomePageState extends State<HomePage> {
               options: MutationOptions(
                 document: gql(TodoFetch.addData),
               ),
-              builder: (runMutation, result) => Column(
-                children: [
-                  SizedBox(
-                    height: 50,
-                    width: 200,
-                    child: TextFormField(
-                      controller: c1,
-                      decoration: InputDecoration(
-                        hintText: "Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+              builder: (runMutation, result) => Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 80,
+                      width: 200,
+                      child: TextFormField(
+                        controller: c1,
+                        validator: (val) {
+                          if (val?.trim().isEmpty ?? false) {
+                            return "Please enter Name";
+                          } else {
+                            return null;
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Name",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: 200,
-                    child: TextFormField(
-                      controller: c2,
-                      decoration: InputDecoration(
-                        hintText: "Code",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    SizedBox(
+                      height: 80,
+                      width: 200,
+                      child: TextFormField(
+                        controller: c2,
+                        validator: (val) {
+                          if (val?.trim().isEmpty ?? false) {
+                            return "Please enter Code";
+                          } else {
+                            return null;
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Code",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      runMutation(<String, dynamic>{
-                        "Name": c1.text,
-                        "Code": c2.text,
-                      });
-                      if (result?.hasException ?? false) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text(
-                              "${result?.exception}",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
-                                },
-                                child: Text("Ok"),
-                              )
-                            ],
-                          ),
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text("Data has been added"),
-                            actions: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop();
-                                  },
-                                  child: Text("Ok"))
-                            ],
-                          ),
-                        );
-                      }
-                    },
-                    child: Text("Submit"),
-                  ),
-                ],
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          runMutation(<String, dynamic>{
+                            "Name": c1.text,
+                            "Code": c2.text,
+                          });
+                          if (result?.hasException ?? false) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                  "${result?.exception}",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop();
+                                    },
+                                    child: Text("Ok"),
+                                  )
+                                ],
+                              ),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text("Data has been added"),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop();
+                                      },
+                                      child: Text("Ok"))
+                                ],
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: Text("Submit"),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -200,7 +221,7 @@ String str = '''query getData{
 ''';
 
 String subs = '''subscription MyQuery{
-  Countries {
+  Countries(order_by: {Code: asc, Name: asc}) {
     Code
     Name
   }
